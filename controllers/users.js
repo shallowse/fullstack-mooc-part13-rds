@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const { Note, Blog, User } = require('../models');
+const { Note, Blog, User, Team } = require('../models');
 
 const { tokenExtractor } = require('../util/middleware');
 
@@ -12,6 +12,13 @@ router.get('/', async (req, res) => {
     }, {
       model: Blog,
       attributes: { exclude: ['userId'], },
+    },
+    {
+      model: Team,
+      attributes: ['id', 'name'],
+      through: {
+        attributes: []
+      }
     }],
   });
   res.json(users);
@@ -24,7 +31,39 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  const user = await User.findByPk(req.params.id);
+  const user = await User.findByPk(req.params.id, {
+    attributes: { exclude: [''] },
+    include: [
+      {
+        model: Note,
+        attributes: { exclude: ['userId'] },
+      },
+      {
+        model: Note,
+        as: 'markedNotes',
+        attributes: { exclude: ['userId'] },
+        through: {
+          attributes: []
+        },
+        include: {
+          model: User,
+          attributes: ['name'],
+        }
+      },
+      {
+        model: Team,
+        attributes: ['name', 'id'],
+        through: {
+          attributes: []
+        },
+      },
+      {
+        model: Blog,
+        attributes: { exclude: ['userId'] },
+      },
+    ],
+  });
+
   if (user) {
     res.json(user);
   } else {
