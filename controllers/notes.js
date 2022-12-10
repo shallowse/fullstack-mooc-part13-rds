@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 
 const { Note, User } = require('../models');
 
-const { tokenExtractor } = require('../util/middleware');
+const { tokenExtractor, isValidUser } = require('../util/middleware');
 
 router.get('/', async (req, res) => {
   const where = {};
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
   res.json(notes);
 });
 
-router.post('/', tokenExtractor, async (req, res) => {
+router.post('/', tokenExtractor, isValidUser, async (req, res) => {
   const user = await User.findByPk(req.decodedToken.id);
   const note = await Note.create({ ...req.body, userId: user.id, date: new Date() });
   return res.json(note);
@@ -51,14 +51,14 @@ router.get('/:id', noteFinder, async (req, res) => {
   }
 });
 
-router.delete('/:id', noteFinder, async (req, res) => {
+router.delete('/:id', tokenExtractor, isValidUser, noteFinder, async (req, res) => {
   if (req.note) {
     await req.note.destroy();
   }
   res.status(204).end();
 });
 
-router.put('/:id', noteFinder, async (req, res) => {
+router.put('/:id', tokenExtractor, isValidUser, noteFinder, async (req, res) => {
   if (req.note) {
     req.note.important = req.body.important;
     await req.note.save();

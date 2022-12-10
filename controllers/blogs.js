@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 
 const { Blog, User } = require('../models');
 
-const { tokenExtractor } = require('../util/middleware');
+const { tokenExtractor, isValidUser } = require('../util/middleware');
 
 router.get('/', async (req, res) => {
   const where = {};
@@ -12,9 +12,9 @@ router.get('/', async (req, res) => {
   if (req.query.search) {
     // https://stackoverflow.com/a/57716890
     where[Op.or] = [
-        { title: { [Op.iLike]: `%${req.query.search}%` } }, // https://stackoverflow.com/a/57372107
-        { author: { [Op.iLike]: `%${req.query.search}%` } },
-      ];
+      { title: { [Op.iLike]: `%${req.query.search}%` } }, // https://stackoverflow.com/a/57372107
+      { author: { [Op.iLike]: `%${req.query.search}%` } },
+    ];
   }
 
   const blogs = await Blog.findAll({
@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
   res.json(blogs);
 });
 
-router.post('/', tokenExtractor, async (req, res) => {
+router.post('/', tokenExtractor, isValidUser, async (req, res) => {
   const user = await User.findByPk(req.decodedToken.id);
   const blog = await Blog.create({ ...req.body, userId: user.id });
   return res.json(blog);
@@ -52,8 +52,16 @@ router.get('/:id', blogFinder, async (req, res) => {
   }
 });
 
-router.delete('/:id', tokenExtractor, blogFinder, async (req, res) => {
-  if (req.decodedToken.id == req.params.id) {
+router.delete('/:id', tokenExtractor, isValidUser, blogFinder, async (req, res) => {
+  console.log('req.decodedToken', req.decodedToken);
+  console.log('req.params.id', req.params);
+
+  const blog = await Blog.findByPk(req.params.id);
+  if (!blog) {
+    return res.status(404).json({ error: 'blog not found' });
+  }
+
+  if (req.decodedToken.id === blog.userId) {
     await req.blog.destroy();
     res.json(req.blog);
   } else {

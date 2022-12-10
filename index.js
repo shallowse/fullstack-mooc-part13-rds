@@ -9,6 +9,7 @@ const notesRouter = require('./controllers/notes');
 const blogsRouter = require('./controllers/blogs');
 const usersRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
+const logoutRouter = require('./controllers/logout');
 const authorRouter = require('./controllers/author');
 const readinglistRouter = require('./controllers/readinglist');
 
@@ -18,6 +19,7 @@ app.use('/api/notes', notesRouter);
 app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/logout', logoutRouter);
 app.use('/api/authors', authorRouter);
 app.use('/api/readinglists', readinglistRouter);
 
