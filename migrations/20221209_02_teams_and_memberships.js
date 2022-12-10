@@ -31,10 +31,10 @@ module.exports = {
         allowNull: false,
         references: { model: 'teams', key: 'id' },
       },
-      down: async ({ context: queryInterface }) => {
-        await queryInterface.dropTable('teams');
-        await queryInterface.dropTable('memberships');
-      },
     });
-  }
+  },
+  down: async ({ context: queryInterface }) => {
+    await queryInterface.dropTable('teams');
+    await queryInterface.dropTable('memberships');
+  },
 };
