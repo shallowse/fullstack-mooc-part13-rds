@@ -95,6 +95,7 @@ const isAdmin = async (req, res, next) => {
   next();
 };
 
+// Note: we skip the disabled field check when user has admin privileges
 router.put('/:username', tokenExtractor, isAdmin, async (req, res) => {
   const user = await User.findOne({ where: { username: req.params.username } });
   if (user) {

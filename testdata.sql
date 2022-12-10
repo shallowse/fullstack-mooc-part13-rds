@@ -1,10 +1,10 @@
 --Users
 INSERT INTO users (username, name, created_at, updated_at, admin, disabled) 
-       VALUES ('john', 'John Harper', NOW(), NOW(), true, false);
+       VALUES ('john@gmail.com', 'John Harper', NOW(), NOW(), true, false);
 INSERT INTO users (username, name, created_at, updated_at, admin, disabled) 
-       VALUES ('avery', 'Avery Skyler', NOW(), NOW(), false, false);
+       VALUES ('avery@outlook.com', 'Avery Skyler', NOW(), NOW(), false, false);
 INSERT INTO users (username, name, created_at, updated_at, admin, disabled) 
-       VALUES ('madison', 'Madison Loren', NOW(), NOW(), false, true);
+       VALUES ('madison@office.com', 'Madison Loren', NOW(), NOW(), false, true);
 
 --Notes
 INSERT INTO notes (content, important, date, user_id)
