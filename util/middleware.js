@@ -33,6 +33,7 @@ const isValidUser = async (req, res, next) => {
   }
 
   if (user.disabled) {
+    await session.destroy(); 
     return res.status(401).json({ error: 'Not valid, user disabled, contact admin' });
   }
 
