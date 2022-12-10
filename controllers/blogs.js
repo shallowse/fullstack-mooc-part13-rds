@@ -40,6 +40,9 @@ router.post('/', tokenExtractor, isValidUser, async (req, res) => {
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
+  if (!req.blog) {
+    return res.status(404).json({ error: 'blog not found' });
+  }
   next();
 };
 
@@ -53,19 +56,13 @@ router.get('/:id', blogFinder, async (req, res) => {
 });
 
 router.delete('/:id', tokenExtractor, isValidUser, blogFinder, async (req, res) => {
-  console.log('req.decodedToken', req.decodedToken);
-  console.log('req.params.id', req.params);
-
-  const blog = await Blog.findByPk(req.params.id);
-  if (!blog) {
-    return res.status(404).json({ error: 'blog not found' });
-  }
-
-  if (req.decodedToken.id === blog.userId) {
+  //console.log('req.decodedToken', req.decodedToken);
+  //console.log('req.params.id', req.params);
+  if (req.decodedToken.id === req.blog.userId) {
     await req.blog.destroy();
     res.json(req.blog);
   } else {
-    res.status(401).json({ error: 'You are not authorized to delete' });
+    res.status(401).json({ error: 'You are not authorized to delete this blog' });
   }
 });
 
